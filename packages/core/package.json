@@ -1,6 +1,6 @@
 {
   "name": "@talkentry/core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Platform-agnostic Talkentry chat session, store, timeline, and viewport",
   "license": "MIT",
   "author": "Maksim Kapustin",
@@ -58,7 +58,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "npm run clean && tsc -p tsconfig.build.json",
+    "build": "npm run clean && tsc -p tsconfig.build.json && node ../../scripts/rewrite-esm-specifiers.mjs lib",
     "clean": "node -e \"require('node:fs').rmSync('lib',{recursive:true,force:true})\"",
     "prepack": "npm run build",
     "test": "jest --config jest.config.cjs",

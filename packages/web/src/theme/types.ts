@@ -57,7 +57,7 @@ export type TalkentryThemeTypography = {
 
 /**
  * Design tokens for built-in Chat UI.
- * Application-specific branding stays in the host app, not in SDK core.
+ * Bank-specific branding stays in the host app, not in SDK core.
  */
 export type TalkentryTheme = {
   readonly colors: TalkentryThemeColors;

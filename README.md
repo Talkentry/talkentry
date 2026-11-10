@@ -8,7 +8,7 @@ https://github.com/user-attachments/assets/0004e9ec-fc7a-4afe-adf2-037f977a83e4
 
 `chat-public` is the public source repository for the `@talkentry` chat SDK packages for React Native and React DOM. The SDK combines a shared, framework-independent message session with separate native and browser interfaces, so your application can keep control of its backend and presentation.
 
-> Early release: the packages are version `0.0.1`, and APIs may change between releases. Device performance, browser compatibility, accessibility, and production backend integration still require validation in your application.
+> Early release: the packages are version `0.0.2`, and APIs may change between releases. Device performance, browser compatibility, accessibility, and production backend integration still require validation in your application.
 
 ## Packages
 
@@ -96,7 +96,7 @@ Supply the platform's peer dependencies as described in its package guide. Regis
 - **Release maturity:** the UI and navigation APIs are early-stage. Passing unit tests or creating a bundle does not establish device smoothness, browser support, or production readiness.
 - **History and navigation:** full reader-anchor restoration, a navigation back stack, and multi-segment history retention are not complete. Native quote-transition thresholds are provisional.
 - **Optimistic edits:** revision ordering can prevent rollback after a failed edit and ignore server-normalized edit responses. Reloading history does not reliably restore the server text; this also affects backends that omit `revision`.
-- **Node.js and SSR:** the current core and web JavaScript outputs contain relative imports that do not resolve in native Node.js ESM. Browser bundler consumption has been checked separately; direct Node.js imports and SSR integrations that rely on them require corrected package output.
+- **Node.js and SSR:** core and web build output uses explicit relative ESM specifiers, including `index.js` for directory imports. Direct Node ESM import and a default webpack 5 production bundle resolve those imports. A host SSR integration is still separate acceptance.
 - **Recovery and storage:** recovery depends on backend capabilities; without event replay, reconnect can reload the latest window instead of recovering every missed event. The SDK's active cache is not persistent offline storage.
 - **Read state:** the host owns durable read cursors and unread totals. Native hosts must pass actual screen visibility through `messageListProps.isActive`; the browser renderer needs separate visibility/read integration review.
 

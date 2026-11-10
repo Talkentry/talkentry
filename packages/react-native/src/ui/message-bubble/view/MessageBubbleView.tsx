@@ -94,7 +94,7 @@ export const MessageBubbleView = ({
     onReply,
     onEdit,
     onDelete,
-    // Clipboard integration belongs to the host application.
+    // Host-owned clipboard (Expo Go has no RNCCClipboard native module).
     onCopy: onCopy && message.text?.trim() ? onCopy : undefined,
   };
   const actions = buildMessageActions(message, currentUserId, locale, actionHandlers);

@@ -15,7 +15,7 @@ const reactFiles = ['packages/{react-native,web}/**/*.{ts,tsx}'];
 
 export default tseslint.config(
   {
-    ignores: ['**/lib/**', '**/coverage/**', '**/node_modules/**', '**/dist/**'],
+    ignores: ['**/lib/**', '**/coverage/**', '**/node_modules/**', '**/dist/**', '**/.expo/**'],
   },
   { linterOptions: { reportUnusedDisableDirectives: 'error' } },
   js.configs.recommended,
