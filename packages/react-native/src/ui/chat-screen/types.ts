@@ -10,7 +10,7 @@ export type ChatProps = {
   /** Host-owned user directory for avatars / display names / typing labels. */
   readonly users?: Readonly<Record<string, User>>;
   /**
-   * Host clipboard integration for the Copy action.
+   * Host clipboard for the Copy action (e.g. expo-clipboard).
    * When omitted, the copy icon is hidden.
    */
   readonly onCopy?: (message: Message) => void;
