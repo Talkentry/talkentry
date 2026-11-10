@@ -1,0 +1,12 @@
+(globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }).IS_REACT_ACT_ENVIRONMENT =
+  true;
+
+const originalError = console.error;
+beforeEach(() => {
+  jest.spyOn(console, 'error').mockImplementation((...args: unknown[]) => {
+    if (String(args[0]).startsWith('react-test-renderer is deprecated')) {
+      return;
+    }
+    originalError(...args);
+  });
+});
