@@ -1,0 +1,67 @@
+{
+  "name": "@talkentry/core",
+  "version": "0.0.1",
+  "description": "Platform-agnostic Talkentry chat session, store, timeline, and viewport",
+  "license": "MIT",
+  "author": "Maksim Kapustin",
+  "contributors": [
+    {
+      "name": "Aleksandr Bulaev"
+    }
+  ],
+  "homepage": "https://github.com/talkentry/talkentry#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/talkentry/talkentry.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/talkentry/talkentry/issues"
+  },
+  "keywords": [
+    "chat",
+    "chat-sdk",
+    "chat-engine",
+    "headless",
+    "headless-chat",
+    "messaging",
+    "messenger",
+    "message-store",
+    "conversation",
+    "realtime",
+    "realtime-chat",
+    "in-app-chat",
+    "talkentry"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "type": "module",
+  "source": "./src/index.ts",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "react-native": "./src/index.ts",
+  "exports": {
+    ".": {
+      "talkentry-source": "./src/index.ts",
+      "types": "./lib/index.d.ts",
+      "react-native": "./src/index.ts",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run clean && tsc -p tsconfig.build.json",
+    "clean": "node -e \"require('node:fs').rmSync('lib',{recursive:true,force:true})\"",
+    "prepack": "npm run build",
+    "test": "jest --config jest.config.cjs",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
+  }
+}
