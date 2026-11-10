@@ -1,0 +1,63 @@
+{
+  "name": "talkentry",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Customizable, backend-agnostic chat SDK for React Native and React DOM",
+  "license": "MIT",
+  "author": "Maksim Kapustin",
+  "contributors": [
+    {
+      "name": "Aleksandr Bulaev"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/talkentry/talkentry.git"
+  },
+  "packageManager": "npm@11.13.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace @talkentry/core && npm run build --workspace @talkentry/web && npm run build --workspace @talkentry/react-native",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix --max-warnings 0",
+    "test:style": "node scripts/test-code-style.mjs",
+    "test:build": "node scripts/verify-build-output.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run test --workspaces --if-present",
+    "verify": "npm run format:check && npm run lint && npm run test:style && npm run build --workspace @talkentry/core && npm run typecheck && npm run test --workspace @talkentry/core -- --runInBand && npm run test --workspace @talkentry/web -- --runInBand && npm run test --workspace @talkentry/react-native -- --runInBand && npm run build --workspace @talkentry/web && npm run build --workspace @talkentry/react-native && npm run test:build"
+  },
+  "engines": {
+    "node": "24.x",
+    "npm": "11.13.x"
+  },
+  "devDependencies": {
+    "@babel/core": "7.29.7",
+    "@babel/plugin-transform-react-jsx": "7.29.7",
+    "@babel/preset-env": "7.29.7",
+    "@babel/preset-typescript": "7.29.7",
+    "@eslint/js": "9.39.5",
+    "@react-native/typescript-config": "0.88.0",
+    "@types/jest": "30.0.0",
+    "@types/react": "19.3.0",
+    "eslint": "9.39.5",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-import-x": "4.17.1",
+    "eslint-plugin-jsx-a11y": "6.10.2",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-simple-import-sort": "14.0.0",
+    "globals": "17.14.0",
+    "jest": "30.5.2",
+    "prettier": "3.9.10",
+    "react": "19.3.1",
+    "react-native": "0.88.0",
+    "react-native-builder-bob": "0.43.2",
+    "react-test-renderer": "19.3.1",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.1"
+  }
+}

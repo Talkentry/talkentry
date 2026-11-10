@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "../..",
+    "types": ["jest", "react", "react-native", "node"],
+    "baseUrl": "../..",
+    "paths": {
+      "@talkentry/core": ["packages/core/src/index.ts"],
+      "@test/*": ["test-support/*"]
+    }
+  },
+  "include": ["src", "tests"],
+  "exclude": ["lib", "node_modules"]
+}

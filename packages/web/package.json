@@ -1,0 +1,78 @@
+{
+  "name": "@talkentry/web",
+  "version": "0.0.1",
+  "description": "Talkentry chat SDK for React DOM: Provider, hooks, and a prototype Chat screen.",
+  "license": "MIT",
+  "author": "Maksim Kapustin",
+  "contributors": [
+    {
+      "name": "Aleksandr Bulaev"
+    }
+  ],
+  "homepage": "https://github.com/talkentry/talkentry#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/talkentry/talkentry.git",
+    "directory": "packages/web"
+  },
+  "bugs": {
+    "url": "https://github.com/talkentry/talkentry/issues"
+  },
+  "keywords": [
+    "react",
+    "react-chat",
+    "react-messaging",
+    "chat",
+    "chat-sdk",
+    "chat-ui",
+    "chat-component",
+    "messaging",
+    "messenger",
+    "conversation",
+    "in-app-chat",
+    "realtime",
+    "realtime-chat",
+    "web-chat",
+    "talkentry"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "type": "module",
+  "source": "./src/index.ts",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "talkentry-source": "./src/index.ts",
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run clean && tsc -p tsconfig.build.json",
+    "clean": "node -e \"require('node:fs').rmSync('lib',{recursive:true,force:true})\"",
+    "prepack": "npm run build",
+    "test": "jest --config jest.config.cjs",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@talkentry/core": "^0.0.1"
+  },
+  "peerDependencies": {
+    "react": "19.3.x",
+    "react-dom": "19.3.x"
+  },
+  "devDependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  }
+}
