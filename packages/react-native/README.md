@@ -1,8 +1,8 @@
 # @talkentry/react-native
 
-A React Native chat screen on top of `@talkentry/core`. You get `TalkentryProvider`, a `Chat` with a message list and composer, and hooks if you want to draw the list yourself. Auth, your backend, and anything that must survive a restart stay in the app.
+Customizable, backend-agnostic chat SDK for React Native. Session, store, timeline, and viewport live in `@talkentry/core` and are re-exported here with a ready `Chat` screen; your app keeps auth, transport, and persistence.
 
-This is a `0.x` release. The screen works in tests with doubles. It has not been accepted on a physical device, and the API can still change.
+> Early release (`0.x`). The API can still change between minor versions. Production, native, and security acceptance are not complete.
 
 ## Install
 
@@ -10,81 +10,91 @@ This is a `0.x` release. The screen works in tests with doubles. It has not been
 npm install @talkentry/react-native
 ```
 
-`@talkentry/core` comes with it. Also install the peer dependencies at the versions in `package.json`: `react`, `react-native`, `@shopify/flash-list`, `react-native-keyboard-controller`, `react-native-reanimated`, and `react-native-safe-area-context`.
+`@talkentry/core` is installed transitively. Host Chat screens import this package, not the core package directly.
 
-This package does not include a backend client or transport implementation. Pass your application's `ChatAdapter`; see the [adapter guide](../core/README.md#write-an-adapter).
+Peer dependencies: `react`, `react-native`, `@shopify/flash-list`, `react-native-keyboard-controller`, `react-native-reanimated`, `react-native-worklets` (`0.13.x`), `react-native-safe-area-context`. This package does not depend on Socket.IO.
 
-## Show a chat
+The keyboard dock calls `scheduleOnRN` from `react-native-worklets`. Install that package directly; `0.13.x` is the peer range required by `react-native-reanimated` 4.7. Add `react-native-reanimated/plugin` as the last Babel plugin. In Reanimated 4.7 that plugin is the Worklets transform, so do not add `react-native-worklets/plugin` as well.
 
-The screen requires `KeyboardProvider` and `SafeAreaProvider`, included below. `scopeKey` is part of the session identity: change it when the tenant or login changes, even if `chatId` and `currentUserId` stay the same.
+## Quick start
 
 ```tsx
 import { Chat, TalkentryProvider, type ChatAdapter } from '@talkentry/react-native';
-import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 declare const adapter: ChatAdapter;
 
 export const ChatScreen = () => (
-  <SafeAreaProvider>
-    <KeyboardProvider>
-      <TalkentryProvider
-        adapter={adapter}
-        chatId="support"
-        currentUserId="user-1"
-        scopeKey="tenant-1:auth-session-1"
-      >
-        <Chat locale="en" />
-      </TalkentryProvider>
-    </KeyboardProvider>
-  </SafeAreaProvider>
+  <TalkentryProvider
+    adapter={adapter}
+    chatId="support"
+    currentUserId="user-1"
+    scopeKey="tenant-1:session-1"
+  >
+    <Chat locale="en" />
+  </TalkentryProvider>
 );
 ```
 
-`declare const adapter` is a type placeholder, not a runtime implementation. Replace it with an import or initialization of your application's stable adapter instance. The `ChatAdapter` contract, including `capabilities`, is documented in the [core guide](../core/README.md#write-an-adapter).
+Wrap the screen in `KeyboardProvider` and `SafeAreaProvider`. `adapter` is your `ChatAdapter`. A client for the reference server lives in the `chat-example` repository under `adapter/native`.
 
-`locale` is `en` today. Pass `users` when you have display names or avatars. Pass `onCopy` if the Copy action should do something; without it the copy control is hidden.
+## Customization
 
-## Your own list
+- `TalkentryThemeProvider` with `theme` / `themeOverride` for colors, radii, and typography.
+- `Chat` slots: `renderMessageBody`, `renderComposer`, `renderSwipeHint`.
+- `useMessages()` and `useMessage(key)` to build a fully custom list.
 
-`useMessages()` returns `messageKeys` and the loading state. Read one row with `useMessage(key)`. Do not use the server id as the React key for an optimistic send: the key has to stay put when the server id arrives.
+## Scrolling and reads
 
-```tsx
-import { useMessage, useMessages } from '@talkentry/react-native';
-import { Text } from 'react-native';
+Manual gestures cancel automatic navigation. The latest button uses a 216/72 layout-unit
+show/hide hysteresis; initial positioning is immediate, while following and explicit Latest
+use animated measured offsets.
 
-const MessageRow = ({ messageKey }: { messageKey: string }) => {
-  const message = useMessage(messageKey);
-  return message ? <Text>{message.text}</Text> : null;
-};
+A newly accepted local send requests the current latest tail before server acknowledgement,
+including from history. An active gesture or inactive screen still takes priority. ACKs,
+own realtime echoes, and retries do not replay the acceptance event.
 
-export const CustomList = () => {
-  const { messageKeys } = useMessages();
-  return messageKeys.map((messageKey) => <MessageRow key={messageKey} messageKey={messageKey} />);
-};
-```
+Connected lists subscribe automatically. Controlled lists can pass `scopeKey`,
+`subscribeLocalSendAccepted`, and `onGoToLatest(signal)`; the source is synchronous,
+scoped, monotonically sequenced, and must not replay old events. `ChatSession` exposes
+`subscribeLocalSendAccepted`; headless `useViewport` provides `onLocalSendAccepted`.
 
-`Chat` also takes render slots (`renderMessage`, `renderMessageBody`, `renderComposer`, and others). A custom message must forward `onQuotePress` and `onNavigationFocus`, or quote navigation and focus will not run.
+`onNavigationChange` observes pending/executing/settled/cancelled/failed snapshots.
+Bounded execution failures expose a retry control, separate from sending and history errors.
+`isActive={false}` stops navigation and reading; `readEnabled={false}` pauses read dwell
+only, allowing keyboard/layout following to continue.
+Detached accepted messages use bounded in-memory key staging, not a durable outbox;
+`maxPendingSends` independently caps in-flight and staged sends (default 16 each).
+The scroll-to-latest button does not use a skeleton: it animates to the tail
+across messages already in the window. If the tail is missing, the latest page
+loads first and the list is placed there without flying across the gap. A locally
+accepted send still animates only when near; a far one relocates immediately.
+Quote jumps still use an opaque skeleton cover, non-animated relocation, real
+destination layout admission, and a short reveal. `maskedJumps` controls the
+provisional 50-message / 12-viewport thresholds for those quote jumps; set
+`enabled: false` for comparison. Manual scrolling is unchanged, and Reduce Motion
+is respected.
 
-## Theme
+Tapping a quote navigates locally when possible or uses `loadAround` for a remote
+original. Controlled hosts provide `onGoToMessage(id, signal)` and an around change.
+Custom `renderMessage` slots forward `onQuotePress` and `onNavigationFocus` to
+MessageBubble. Missing targets do not replace the old window, and hidden skeleton
+cells never count as read. Native frame-time, memory, and accessibility acceptance
+remain open despite the renderer-contract tests.
 
-`TalkentryThemeProvider` sits inside the provider. `theme` replaces tokens, `themeOverride` patches them. Colors, type, radii, and spacing for the built-in screen come from that theme.
+Connected lists send read receipts only for incoming messages observed in the foreground,
+unobscured viewport for 250 ms. Pass navigation focus through `messageListProps.isActive`.
+`onMessagesRead(ids)` reports local observation, not successful server acknowledgement.
+Your app owns durable read state and must update a controlled `unreadCount` itself.
 
-```tsx
-import { Chat, TalkentryThemeProvider } from '@talkentry/react-native';
+Without a host total/cursor, the badge tracks new incoming messages in the retained window,
+not all server unread history. Controlled lists never send receipts through an ambient provider;
+their `onGoToLatest(signal)` handler must honor cancellation before committing fetched data.
+Headless hosts can explicitly call `useMessages().markReadMessages(ids)`.
 
-<TalkentryThemeProvider themeOverride={{ colors: { bubbleMine: '#3390EC' } }}>
-  <Chat locale="en" />
-</TalkentryThemeProvider>;
-```
+## Links
 
-## Scrolling and read receipts
-
-A finger on the list cancels automatic scrolling, including a jump that was already in flight. Sending a message asks the list to follow the tail, but an active gesture or a screen that is not focused wins.
-
-`messageListProps.isActive` should follow navigation focus. `false` stops both scrolling and read receipts. `readEnabled={false}` pauses read receipts only.
-
-Delivered and read are different. The screen can mark incoming messages read after they sit visible and unobscured for a short dwell. That local observation is not proof the server stored it. The badge on the scroll-to-latest button counts new messages in the open window. A total unread count for the whole history belongs to your app.
+- Source, docs, and example app: [github.com/talkentry/talkentry](https://github.com/talkentry/talkentry)
+- Reference backend: [github.com/talkentry/talkentry-server](https://github.com/talkentry/talkentry-server)
 
 ## License
 

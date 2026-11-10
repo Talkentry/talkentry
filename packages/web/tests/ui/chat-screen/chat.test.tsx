@@ -541,7 +541,7 @@ describe('web Chat', () => {
       <TalkentryProvider adapter={mock.adapter} chatId="chat" currentUserId="me">
         <Chat
           renderMessage={({ message: row }) => <div>{`row-${row.text}`}</div>}
-          renderComposer={() => <div>custom-composer</div>}
+          renderComposer={() => <div>bank-composer</div>}
         />
       </TalkentryProvider>,
     );
@@ -551,7 +551,7 @@ describe('web Chat', () => {
     });
 
     expect(json(tree)).toContain('row-hello');
-    expect(json(tree)).toContain('custom-composer');
+    expect(json(tree)).toContain('bank-composer');
     expect(tree.root.findAllByType('textarea')).toHaveLength(0);
   });
 

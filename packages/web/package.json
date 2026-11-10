@@ -1,6 +1,6 @@
 {
   "name": "@talkentry/web",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Talkentry chat SDK for React DOM: Provider, hooks, and a prototype Chat screen.",
   "license": "MIT",
   "author": "Maksim Kapustin",
@@ -58,14 +58,14 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "npm run clean && tsc -p tsconfig.build.json",
+    "build": "npm run clean && tsc -p tsconfig.build.json && node ../../scripts/rewrite-esm-specifiers.mjs lib",
     "clean": "node -e \"require('node:fs').rmSync('lib',{recursive:true,force:true})\"",
     "prepack": "npm run build",
     "test": "jest --config jest.config.cjs",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json"
   },
   "dependencies": {
-    "@talkentry/core": "^0.0.1"
+    "@talkentry/core": "^0.0.2"
   },
   "peerDependencies": {
     "react": "19.3.x",
