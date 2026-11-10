@@ -1,3 +1,9 @@
+https://github.com/user-attachments/assets/41535f32-4c2b-4030-b18d-880b406dec2d
+
+https://github.com/user-attachments/assets/767b0231-8f65-4b72-b593-b537f10edc3f
+
+https://github.com/user-attachments/assets/0004e9ec-fc7a-4afe-adf2-037f977a83e4
+
 # chat-public
 
 `chat-public` is the public source repository for the `@talkentry` chat SDK packages for React Native and React DOM. The SDK combines a shared, framework-independent message session with separate native and browser interfaces, so your application can keep control of its backend and presentation.
